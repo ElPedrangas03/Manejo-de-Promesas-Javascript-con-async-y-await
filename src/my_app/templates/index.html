@@ -55,7 +55,7 @@
 
 {% block javascript %}
 <script>
-    $(document).ready(function () {
+    document.addEventListener("DOMContentLoaded", function(){
         /*
             On submiting the form, send the POST ajax
             request to server and after successfull submission
@@ -128,6 +128,6 @@
                 }
             })
         })
-    })
+    });
 </script>
 {% endblock javascript %}
