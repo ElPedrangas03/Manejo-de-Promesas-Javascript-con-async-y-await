@@ -73,7 +73,7 @@
             try{
                 const response = await fetch("{% url 'post_friend' %}", {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 });
 
                 // Verificar si la respuesta fue existosa
@@ -108,29 +108,31 @@
         call AJAX get request to check if the nickName
         already exists or not.
         */
-        $("#id_nick_name").focusout(function (e) {
+        async function validateNickname(e) {
             e.preventDefault();
             // get the nickname
-            var nick_name = $(this).val();
-            // GET AJAX request
-            $.ajax({
-                type: 'GET',
-                url: "{% url 'validate_nickname' %}",
-                data: {"nick_name": nick_name},
-                success: function (response) {
-                    // if not valid user, alert the user
-                    if(!response["valid"]){
-                        alert("You cannot create a friend with same nick name");
-                        var nickName = $("#id_nick_name");
-                        nickName.val("")
-                        nickName.focus()
-                    }
-                },
-                error: function (response) {
-                    console.log(response)
+            const nick_name=e.target.value;
+            try {
+                const response = await fetch("{% url 'validate_nickname' %}", {
+                    methor: 'GET',
+                });
+                if(!response.ok) throw new Error('Error en la solicitud');
+
+                const data = await response.json();
+
+                if (!data["valid"]) {
+                    alert("No puedes crear un amigo con el mismo apodo");
+                    const nickNameInput=document.getElementById('id_nick_name');
+                    nickNameInput.value="";
+                    nickNameInput.focus();
                 }
-            })
-        })
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        // Añadir eventos al formulario y al input
+        friendForm.addEventListener('submit', submitForm);
+        document.getElementById('id_nick_name').addEventListener('focusout', validateNickname);
     });
 </script>
 {% endblock javascript %}
